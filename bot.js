@@ -29,13 +29,16 @@ function handler(from, to, original_message) {
     if (message.indexOf('disk usage') > -1) {
         const linux_builders = 6;
         for (var i = 0; i < linux_builders; i++) {
-            saltCommand('servo-linux' + (i + 1), 'df -h', function(i, err, stdout, stderr) {
-                bot.say(from, 'servo-linux' + (i + 1) + ':');
-                let lines = stdout.split('\n');
-                lines.forEach(function(line) {
-                    bot.say(from, line);
-                });
-            }.bind(i));
+            let handler = function(i) {
+                return function(err, stdout, stderr) {
+                    bot.say(from, 'servo-linux' + (i + 1) + ':');
+                    let lines = stdout.split('\n');
+                    lines.forEach(function(line) {
+                        bot.say(from, line);
+                    });
+                };
+            };
+            saltCommand('servo-linux' + (i + 1), 'df -h', handler(i));
         }
     }
 }
