@@ -59,6 +59,8 @@ function parseUsage(output, minion) {
     return null;
 }
 
+exports.parseUsage = parseUsage;
+
 /*console.log(parseUsage(validOutput, "servo-linux1") == "68%");
 console.log(parseUsage(validOutput, "servo-linux*") == "68%");
 console.log(parseUsage(invalidOutput, "servo-linux1") == null);
