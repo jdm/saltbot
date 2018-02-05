@@ -1,0 +1,8 @@
+{
+    "channels": ["#servo-test"],
+    "server": "irc.mozilla.org",
+    "botName": "saltbot",
+    "port": "6697",
+    "secure": true,
+    "autoRejoin": true
+}
