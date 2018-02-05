@@ -38,7 +38,7 @@ function handler(from, to, original_message) {
             builders.push("servo-mac" + (i + 1));
         }
         for (const builder of builders) {
-            saltCommand('servo-linux' + (i + 1), 'df -h', function(err, stdout, stderr) {
+            saltCommand(builder, 'df -h', function(err, stdout, stderr) {
                 const response = builder + ': ';
                 const usage = parseUsage(stdout, builder) || "<invalid response>";
                 bot.say(from, response + usage);
