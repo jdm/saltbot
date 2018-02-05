@@ -1,7 +1,8 @@
 var irc = require("irc"),
     https = require("https"),
     exec = require('child_process').exec,
-    config = require("./config");
+    config = require("./config"),
+    parseUsage = require('./usage').parseUsage;
 
 var bot = new irc.Client(config.server, config.botName, {
     channels: config.channels,
@@ -27,18 +28,21 @@ function handler(from, to, original_message) {
     message = original_message.toLowerCase();
 
     if (message.indexOf('disk usage') > -1) {
-        const linux_builders = 6;
-        for (var i = 0; i < linux_builders; i++) {
-            let handler = function(i) {
-                return function(err, stdout, stderr) {
-                    bot.say(from, 'servo-linux' + (i + 1) + ':');
-                    let lines = stdout.split('\n');
-                    lines.forEach(function(line) {
-                        bot.say(from, line);
-                    });
-                };
-            };
-            saltCommand('servo-linux' + (i + 1), 'df -h', handler(i));
+        const numLinuxBuilders = 6;
+        const numMacBuilders = 8;
+        let builders = [];
+        for (let i = 0; i < numLinuxBuilders; i++) {
+            builders.push("servo-linux" + (i + 1));
+        }
+        for (let i = 0; i < numMacBuilders; i++) {
+            builders.push("servo-mac" + (i + 1));
+        }
+        for (const builder of builders) {
+            saltCommand('servo-linux' + (i + 1), 'df -h', function(err, stdout, stderr) {
+                const response = builder + ': ';
+                const usage = parseUsage(stdout, builder) || "<invalid response>";
+                bot.say(from, response + usage);
+            });
         }
     }
 }
